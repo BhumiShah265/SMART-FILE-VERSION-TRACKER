@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Smart File — Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0D1117;
+    --bg-panel: #10161f;
+    --text: #E6EDF3;
+    --text-muted: #8B949E;
+    --accent: #6E5BFF;
+    --accent-dim: #6E5BFF33;
+    --success: #3FB68B;
+    --amber: #D89A3E;
+    --line: #21262d;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+  }
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:20px 40px;
+    border-bottom:1px solid var(--line);
+  }
+  .brand{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:19px;
+    display:flex;
+    align-items:center;
+    gap:9px;
+  }
+  .brand-dot{
+    width:9px; height:9px; border-radius:50%;
+    background:var(--accent);
+    box-shadow:0 0 10px var(--accent);
+  }
+  .topbar-actions{ display:flex; gap:14px; align-items:center; }
+  .btn{
+    padding:9px 18px;
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    border-radius:7px;
+    font-weight:600;
+    font-size:13.5px;
+    text-decoration:none;
+    display:inline-block;
+    cursor:pointer;
+    transition:background .15s ease, transform .12s ease;
+  }
+  .btn:hover{ background:#5c4ce0; transform:translateY(-1px); }
+  .link-muted{
+    color:var(--text-muted);
+    text-decoration:none;
+    font-size:13.5px;
+  }
+  .link-muted:hover{ color:var(--text); }
+
+  .content{
+    max-width:920px;
+    margin:0 auto;
+    padding:48px 40px;
+  }
+  .content h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:26px;
+    font-weight:600;
+    margin-bottom:6px;
+  }
+  .content .sub{
+    color:var(--text-muted);
+    font-size:14px;
+    margin-bottom:32px;
+  }
+
+  .file-list{
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
+  }
+  .file-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 22px;
+    border-bottom:1px solid var(--line);
+    background:var(--bg-panel);
+    transition:background .15s ease;
+  }
+  .file-row:last-child{ border-bottom:none; }
+  .file-row:hover{ background:#141b26; }
+  .file-info{ display:flex; align-items:center; gap:14px; }
+  .file-icon{
+    width:36px; height:36px;
+    border-radius:8px;
+    background:var(--accent-dim);
+    color:var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    font-weight:600;
+  }
+  .file-name{ font-size:14.5px; font-weight:500; }
+  .file-meta{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    color:var(--text-muted);
+    margin-top:3px;
+  }
+  .file-actions a{
+    font-size:13px;
+    color:var(--accent);
+    text-decoration:none;
+    margin-left:16px;
+  }
+  .file-actions a:hover{ text-decoration:underline; }
+
+  .empty-state{
+    text-align:center;
+    padding:64px 20px;
+    border:1px dashed var(--line);
+    border-radius:10px;
+    color:var(--text-muted);
+  }
+  .empty-state p{ margin-top:8px; font-size:14px; }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="brand"><span class="brand-dot"></span>smart-file</div>
+    <div class="topbar-actions">
+      <a href="{{ url_for('file.upload') }}" class="btn">+ Upload file</a>
+      <a href="{{ url_for('main.logout') }}" class="link-muted">Log out</a>
+    </div>
+  </div>
+
+  <div class="content">
+    <h1>Your tracked files</h1>
+    <p class="sub">{{ files|length }} file{{ 's' if files|length != 1 else '' }} being tracked</p>
+
+    {% if files %}
+    <div class="file-list">
+      {% for file in files %}
+      <div class="file-row">
+        <div class="file-info">
+          <div class="file-icon">{{ file.file_name[:2]|upper }}</div>
+          <div>
+            <div class="file-name">{{ file.file_name }}</div>
+            <div class="file-meta">tracked since {{ file.created_at.strftime('%d %b %Y') }}</div>
+          </div>
+        </div>
+        <div class="file-actions">
+          <a href="#">View history</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div>No files tracked yet</div>
+      <p>Upload your first file to start version tracking.</p>
+    </div>
+    {% endif %}
+  </div>
+
+</body>
+</html>

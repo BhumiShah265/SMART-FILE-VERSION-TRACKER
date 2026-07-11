@@ -1,7 +1,7 @@
 import os
 from flask import Blueprint, request, redirect, url_for, session, render_template
 from app.database.db import db
-from app.database.models import File, Version
+from app.database.models import File, Version,Folder
 from app.core.hashing import hash_file_content
 
 file_bp = Blueprint('file',__name__)
@@ -40,3 +40,19 @@ def upload():
 
         return redirect(url_for('main.dashboard'))
     return render_template('upload.html')
+
+@file_bp.route('/create_folder', methods = ['GET','POST']):
+def create_folder():
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login'))
+    if request.method == 'POST':
+        folder_name = request.form.get("name")
+        new_folder = Folder(
+            name = name,
+            owner_id = session['user_id']
+        )
+        db.session.add(folder_name)
+        db.session.commit()
+
+        return redirect(url_for('main.dashboard'))
+    return render_template('create_folder.html')

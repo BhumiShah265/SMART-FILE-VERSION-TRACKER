@@ -15,6 +15,7 @@ class File(db.Model):
     file_name = db.Column(db.String(100),nullable = False)
     owner_id = db.Column(db.Integer,db.ForeignKey('user.id'),nullable = False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC))
+    folder_id = db.Column(db.Integer, db.ForeignKey('folder.id'),nullable =False)
 
 class Version(db.Model):
     __tablename__ = "version"
@@ -23,4 +24,12 @@ class Version(db.Model):
     file_id = db.Column(db.Integer, db.ForeignKey('file.id'),nullable = False)
     version_number = db.Column(db.Integer)
     storage_path = db.Column(db.String(100))
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC))
+    hash = db.Column(db.String(64))
+
+class Folder(db.Model):
+    __tablename__ = "folder"
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String(100))
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC))

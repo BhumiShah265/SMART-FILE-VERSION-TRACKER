@@ -1,6 +1,7 @@
 from .db import db
-from datetime import datetime,UTC
+from datetime import datetime,timedelta,timezone
 
+IST = timezone(timedelta(hours=5, minutes =30))
 class User(db.Model):
     __tablename__ = "user"
     id = db.Column(db.Integer, primary_key = True)
@@ -14,7 +15,7 @@ class File(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     file_name = db.Column(db.String(100),nullable = False)
     owner_id = db.Column(db.Integer,db.ForeignKey('user.id'),nullable = False)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC))
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(IST))
     folder_id = db.Column(db.Integer, db.ForeignKey('folder.id'),nullable =False)
 
 class Version(db.Model):
@@ -24,7 +25,7 @@ class Version(db.Model):
     file_id = db.Column(db.Integer, db.ForeignKey('file.id'),nullable = False)
     version_number = db.Column(db.Integer)
     storage_path = db.Column(db.String(100))
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC))
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(IST))
     hash = db.Column(db.String(64))
 
 class Folder(db.Model):
@@ -32,4 +33,5 @@ class Folder(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(100))
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC))
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(IST))
+

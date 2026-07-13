@@ -44,15 +44,51 @@
   }
   button:hover{ background:#5c4ce0; }
   a{ color:#8B949E; display:block; margin-top:16px; text-align:center; font-size:13px; }
+  select{
+    width:100%;
+    padding:10px;
+    background:#0D1117;
+    border:1px solid #21262d;
+    border-radius:6px;
+    color:#E6EDF3;
+    margin-bottom:16px;
+    font-family:sans-serif;
+    font-size:14px;
+  }
+  label{ font-size:12.5px; color:#8B949E; display:block; margin-bottom:6px; }
+  .empty-note{
+    background:#1a1408;
+    border:1px solid #4d3a1a;
+    color:#D89A3E;
+    font-size:13px;
+    padding:12px 14px;
+    border-radius:8px;
+    margin-bottom:18px;
+  }
+  .empty-note a{ display:inline; margin:0; color:#D89A3E; text-decoration:underline; }
 </style>
 </head>
 <body>
   <div class="box">
     <h1>Upload a file to track</h1>
+
+    {% if not folders %}
+    <div class="empty-note">
+      You need a folder before uploading. <a href="{{ url_for('file.create_folder') }}">Create one first</a>.
+    </div>
+    {% else %}
     <form method="POST" enctype="multipart/form-data">
+      <label for="folder_id">Folder</label>
+      <select name="folder_id" id="folder_id" required>
+        {% for folder in folders %}
+        <option value="{{ folder.id }}">{{ folder.name }}</option>
+        {% endfor %}
+      </select>
       <input type="file" name="file" required>
       <button type="submit">Upload</button>
     </form>
+    {% endif %}
+
     <a href="{{ url_for('main.dashboard') }}">← Back to dashboard</a>
   </div>
 </body>

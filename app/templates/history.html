@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Smart File — Version History</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0D1117;
+    --bg-panel: #10161f;
+    --text: #E6EDF3;
+    --text-muted: #8B949E;
+    --accent: #6E5BFF;
+    --accent-dim: #6E5BFF33;
+    --success: #3FB68B;
+    --amber: #D89A3E;
+    --danger: #E5534B;
+    --line: #21262d;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+  }
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:20px 40px;
+    border-bottom:1px solid var(--line);
+  }
+  .brand{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:19px;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    text-decoration:none;
+    color:var(--text);
+  }
+  .brand-dot{
+    width:9px; height:9px; border-radius:50%;
+    background:var(--accent);
+    box-shadow:0 0 10px var(--accent);
+  }
+  .link-muted{
+    color:var(--text-muted);
+    text-decoration:none;
+    font-size:13.5px;
+  }
+  .link-muted:hover{ color:var(--text); }
+
+  .content{
+    max-width:900px;
+    margin:0 auto;
+    padding:44px 40px;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    color:var(--accent);
+    margin-bottom:8px;
+  }
+  h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:26px;
+    font-weight:600;
+    margin-bottom:28px;
+  }
+
+  .version-list{
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
+    margin-bottom:36px;
+  }
+  .version-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px 20px;
+    border-bottom:1px solid var(--line);
+    background:var(--bg-panel);
+  }
+  .version-row:last-child{ border-bottom:none; }
+  .version-left{ display:flex; align-items:center; gap:14px; }
+  .version-badge{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    color:var(--accent);
+    background:var(--accent-dim);
+    padding:4px 10px;
+    border-radius:6px;
+    font-weight:600;
+  }
+  .version-hash{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    color:var(--text-muted);
+  }
+  .version-date{
+    font-size:12.5px;
+    color:var(--text-muted);
+    margin-top:2px;
+  }
+  .version-actions{ display:flex; gap:10px; align-items:center; }
+  .version-actions form{ display:inline; }
+  .action-link{
+    font-size:13px;
+    color:var(--accent);
+    text-decoration:none;
+    background:none;
+    border:none;
+    cursor:pointer;
+    font-family:'Inter', sans-serif;
+  }
+  .action-link:hover{ text-decoration:underline; }
+  .action-restore{ color:var(--success); }
+  .checkbox-wrap{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:12px;
+    color:var(--text-muted);
+  }
+
+  .compare-bar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:14px 20px;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    margin-bottom:28px;
+  }
+  .compare-bar p{ font-size:13px; color:var(--text-muted); }
+  .btn{
+    padding:9px 18px;
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    border-radius:7px;
+    font-weight:600;
+    font-size:13.5px;
+    cursor:pointer;
+  }
+  .btn:hover{ background:#5c4ce0; }
+
+  .diff-box{
+    background:#0a0e14;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:18px 0;
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    line-height:1.65;
+    overflow-x:auto;
+  }
+  .diff-line{ padding:1px 20px; white-space:pre; }
+  .diff-add{ background:#0d2818; color:var(--success); }
+  .diff-remove{ background:#2d1414; color:var(--danger); }
+  .diff-meta{ color:var(--accent); }
+  .diff-context{ color:var(--text-muted); }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <a href="{{ url_for('main.dashboard') }}" class="brand"><span class="brand-dot"></span>smart-file</a>
+    <a href="{{ url_for('main.dashboard') }}" class="link-muted">← Back to dashboard</a>
+  </div>
+
+  <div class="content">
+    <div class="eyebrow">VERSION HISTORY</div>
+    <h1>{{ file.file_name }}</h1>
+
+    <form method="GET" action="{{ url_for('file.compare_versions', file_id=file.id) }}">
+      <div class="version-list">
+        {% for version in versions %}
+        <div class="version-row">
+          <div class="version-left">
+            <div class="version-badge">v{{ version.version_number }}</div>
+            <div>
+              <div class="version-hash">{{ version.hash[:12] }}...</div>
+              <div class="version-date">{{ version.created_at.strftime('%d %b %Y, %H:%M') }}</div>
+            </div>
+          </div>
+          <div class="version-actions">
+            <label class="checkbox-wrap">
+              <input type="checkbox" name="v" value="{{ version.id }}">
+              compare
+            </label>
+            <a href="{{ url_for('file.restore_version', version_id=version.id) }}" class="action-link action-restore" onclick="return confirm('Restore this version? It will become the newest version.')">Restore</a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="compare-bar">
+        <p>Select exactly two versions above to see line-by-line differences.</p>
+        <button type="submit" class="btn">Compare selected</button>
+      </div>
+    </form>
+
+    {% if diff_lines %}
+    <div class="diff-box">
+      {% for line in diff_lines %}
+        {% if line.startswith('+') %}
+          <div class="diff-line diff-add">{{ line }}</div>
+        {% elif line.startswith('-') %}
+          <div class="diff-line diff-remove">{{ line }}</div>
+        {% elif line.startswith('@@') %}
+          <div class="diff-line diff-meta">{{ line }}</div>
+        {% else %}
+          <div class="diff-line diff-context">{{ line }}</div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+</body>
+</html>

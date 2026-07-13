@@ -141,6 +141,7 @@
   <div class="topbar">
     <div class="brand"><span class="brand-dot"></span>smart-file</div>
     <div class="topbar-actions">
+      <a href="{{ url_for('file.create_folder') }}" class="link-muted">+ New folder</a>
       <a href="{{ url_for('file.upload') }}" class="btn">+ Upload file</a>
       <a href="{{ url_for('main.logout') }}" class="link-muted">Log out</a>
     </div>
@@ -162,7 +163,7 @@
           </div>
         </div>
         <div class="file-actions">
-          <a href="#">View history</a>
+          <a href="{{ url_for('file.view_history', file_id=file.id) }}">View history</a>
         </div>
       </div>
       {% endfor %}

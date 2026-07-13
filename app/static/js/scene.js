@@ -1,6 +1,6 @@
 /*
- * Smart File — shared WebGL "Version Stack" scene.
- * Renders translucent glass version cards cascading into depth,
+ * Smart File — shared WebGL "Version Stack" scene (pastel light theme).
+ * Renders soft translucent version cards cascading into depth,
  * linked by a glowing commit spine, with drifting data particles.
  * Camera responds to mouse parallax + page scroll.
  *
@@ -10,78 +10,78 @@
 (function () {
   "use strict";
 
-  var ACCENT = 0x6e5bff;
-  var SUCCESS = 0x3fb68b;
-  var AMBER = 0xd89a3e;
-  var NODE_COLORS = [ACCENT, SUCCESS, AMBER];
+  var PERIWINKLE = 0x8fa7f3;
+  var MINT = 0x7fd6bd;
+  var PEACH = 0xf6b79e;
+  var NODE_COLORS = [PERIWINKLE, MINT, PEACH];
 
   var prefersReduced =
     typeof window !== "undefined" &&
     window.matchMedia &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* ---- build a "version card" canvas texture ---- */
+  /* ---- build a "version card" canvas texture (light glass) ---- */
   function makeCardTexture(index) {
     var c = document.createElement("canvas");
     c.width = 512;
     c.height = 340;
     var ctx = c.getContext("2d");
 
-    // glass background
+    // soft glass background
     var grad = ctx.createLinearGradient(0, 0, 512, 340);
-    grad.addColorStop(0, "rgba(24,30,42,0.96)");
-    grad.addColorStop(1, "rgba(14,18,26,0.96)");
-    roundRect(ctx, 0, 0, 512, 340, 26);
+    grad.addColorStop(0, "rgba(255,255,255,0.97)");
+    grad.addColorStop(1, "rgba(238,240,250,0.97)");
+    roundRect(ctx, 0, 0, 512, 340, 30);
     ctx.fillStyle = grad;
     ctx.fill();
 
     // border
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = "rgba(110,91,255,0.45)";
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "rgba(143,167,243,0.5)";
     ctx.stroke();
 
-    // top glow bar
-    roundRect(ctx, 0, 0, 512, 6, 3);
-    ctx.fillStyle = "rgba(110,91,255,0.9)";
+    // top accent bar
+    roundRect(ctx, 0, 0, 512, 8, 4);
+    ctx.fillStyle = "rgba(143,167,243,0.95)";
     ctx.fill();
 
     // header dot + hash
     ctx.beginPath();
-    ctx.arc(46, 58, 9, 0, Math.PI * 2);
-    ctx.fillStyle = "#6E5BFF";
+    ctx.arc(48, 60, 10, 0, Math.PI * 2);
+    ctx.fillStyle = "#8FA7F3";
     ctx.fill();
 
     ctx.font = "22px monospace";
-    ctx.fillStyle = "#D89A3E";
+    ctx.fillStyle = "#E39A6E";
     var hashes = ["#a3f9e21", "#c771b04", "#f02de88", "#4b1c9aa", "#9de00c3", "#12ab77f"];
-    ctx.fillText(hashes[index % hashes.length], 68, 66);
+    ctx.fillText(hashes[index % hashes.length], 72, 68);
 
     // faux diff lines
     var lineDefs = [
-      ["#8B949E", 0.62],
-      ["#3FB68B", 0.44],
-      ["#8B949E", 0.72],
-      ["#E5534B", 0.38],
-      ["#8B949E", 0.55],
-      ["#3FB68B", 0.5],
-      ["#8B949E", 0.66],
+      ["#A9AEC9", 0.62],
+      ["#7FD6BD", 0.44],
+      ["#A9AEC9", 0.72],
+      ["#F1A0A0", 0.38],
+      ["#A9AEC9", 0.55],
+      ["#7FD6BD", 0.5],
+      ["#A9AEC9", 0.66],
     ];
-    var y = 108;
+    var y = 110;
     for (var i = 0; i < lineDefs.length; i++) {
       var seed = (index + 1) * (i + 3);
       var w = (0.3 + ((seed * 37) % 60) / 100) * lineDefs[i][1] * 512;
-      roundRect(ctx, 40, y, w, 14, 7);
+      roundRect(ctx, 42, y, w, 15, 7);
       ctx.fillStyle = lineDefs[i][0];
-      ctx.globalAlpha = 0.55;
+      ctx.globalAlpha = 0.7;
       ctx.fill();
       ctx.globalAlpha = 1;
-      y += 26;
+      y += 27;
     }
 
     // big version label
-    ctx.font = "700 40px sans-serif";
-    ctx.fillStyle = "#E6EDF3";
-    ctx.fillText("v" + (index + 1), 40, 316);
+    ctx.font = "700 42px sans-serif";
+    ctx.fillStyle = "#4A4E6D";
+    ctx.fillText("v" + (index + 1), 42, 318);
 
     var tex = new THREE.CanvasTexture(c);
     tex.anisotropy = 4;
@@ -124,7 +124,7 @@
     var scrollDriven = opts.scrollDriven !== false;
 
     var scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x0d1117, 0.045);
+    scene.fog = new THREE.FogExp2(0xeef0fa, 0.05);
 
     var camera = new THREE.PerspectiveCamera(
       55,
@@ -144,10 +144,13 @@
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2));
 
     // lights (for the card sheen)
-    scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-    var key = new THREE.PointLight(ACCENT, 1.1, 50);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.85));
+    var key = new THREE.PointLight(PERIWINKLE, 1.0, 50);
     key.position.set(6, 6, 8);
     scene.add(key);
+    var fill = new THREE.PointLight(PEACH, 0.5, 50);
+    fill.position.set(-7, -4, 6);
+    scene.add(fill);
 
     var group = new THREE.Group();
     scene.add(group);
@@ -162,7 +165,7 @@
       var mat = new THREE.MeshBasicMaterial({
         map: tex,
         transparent: true,
-        opacity: 0.95,
+        opacity: 0.96,
         side: THREE.DoubleSide,
         depthWrite: false,
       });
@@ -203,9 +206,9 @@
       var pts = curve.getPoints(density * 12);
       var spineGeo = new THREE.BufferGeometry().setFromPoints(pts);
       var spineMat = new THREE.LineBasicMaterial({
-        color: ACCENT,
+        color: PERIWINKLE,
         transparent: true,
-        opacity: 0.55,
+        opacity: 0.6,
         blending: THREE.AdditiveBlending,
       });
       group.add(new THREE.Line(spineGeo, spineMat));
@@ -222,10 +225,10 @@
     }
     pGeo.setAttribute("position", new THREE.BufferAttribute(pPos, 3));
     var pMat = new THREE.PointsMaterial({
-      color: 0x9aa4ff,
-      size: 0.035,
+      color: 0xb9c4ff,
+      size: 0.04,
       transparent: true,
-      opacity: 0.7,
+      opacity: 0.8,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
     });

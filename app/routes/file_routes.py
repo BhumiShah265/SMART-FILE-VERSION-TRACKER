@@ -41,17 +41,17 @@ def upload():
         return redirect(url_for('main.dashboard'))
     return render_template('upload.html')
 
-@file_bp.route('/create_folder', methods = ['GET','POST']):
+@file_bp.route('/create_folder', methods = ['GET','POST'])
 def create_folder():
     if 'user_id' not in session:
         return redirect(url_for('auth.login'))
     if request.method == 'POST':
         folder_name = request.form.get("name")
         new_folder = Folder(
-            name = name,
+            name = folder_name,
             owner_id = session['user_id']
         )
-        db.session.add(folder_name)
+        db.session.add(new_folder)
         db.session.commit()
 
         return redirect(url_for('main.dashboard'))

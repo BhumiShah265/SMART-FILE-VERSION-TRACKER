@@ -141,6 +141,7 @@
   <div class="topbar">
     <div class="brand"><span class="brand-dot"></span>smart-file</div>
     <div class="topbar-actions">
+      <a href="{{ url_for('file.backup_now') }}" class="link-muted">Backup now</a>
       <a href="{{ url_for('file.create_folder') }}" class="link-muted">+ New folder</a>
       <a href="{{ url_for('file.upload') }}" class="btn">+ Upload file</a>
       <a href="{{ url_for('main.logout') }}" class="link-muted">Log out</a>
@@ -151,6 +152,16 @@
     <h1>Your tracked files</h1>
     <p class="sub">{{ files|length }} file{{ 's' if files|length != 1 else '' }} being tracked</p>
 
+    <form method="GET" action="{{ url_for('main.dashboard') }}" style="margin-bottom:24px;">
+      <input
+        type="text"
+        name="q"
+        value="{{ search_query }}"
+        placeholder="Search files by name..."
+        style="width:100%; padding:11px 16px; background:var(--bg-panel); border:1px solid var(--line); border-radius:8px; color:var(--text); font-size:14px; font-family:'Inter', sans-serif;"
+      >
+    </form>
+
     {% if files %}
     <div class="file-list">
       {% for file in files %}
@@ -159,7 +170,7 @@
           <div class="file-icon">{{ file.file_name[:2]|upper }}</div>
           <div>
             <div class="file-name">{{ file.file_name }}</div>
-            <div class="file-meta">tracked since {{ file.created_at.strftime('%d %b %Y') }}</div>
+            <div class="file-meta">v{{ file.version_count }} · tracked since {{ file.created_at.strftime('%d %b %Y') }}</div>
           </div>
         </div>
         <div class="file-actions">
@@ -170,8 +181,8 @@
     </div>
     {% else %}
     <div class="empty-state">
-      <div>No files tracked yet</div>
-      <p>Upload your first file to start version tracking.</p>
+      <div>{{ 'No files match your search' if search_query else 'No files tracked yet' }}</div>
+      <p>{{ 'Try a different search term.' if search_query else 'Upload your first file to start version tracking.' }}</p>
     </div>
     {% endif %}
   </div>

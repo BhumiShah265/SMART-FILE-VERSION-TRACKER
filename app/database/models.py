@@ -18,6 +18,9 @@ class File(db.Model):
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(IST))
     folder_id = db.Column(db.Integer, db.ForeignKey('folder.id'),nullable =False)
 
+    @property
+    def version_count(self):
+        return Version.query.filter_by(file_id = self.id).count()
 class Version(db.Model):
     __tablename__ = "version"
     __table_args__ = (db.UniqueConstraint('file_id','version_number',name = 'unique_file_version'),)

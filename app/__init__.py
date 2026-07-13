@@ -6,7 +6,8 @@ from app.routes.main_routes import main_bp
 from app.routes.file_routes import file_bp
 from dotenv import load_dotenv
 import os
-
+from app.backup.scheduler import start_scheduler
+start_scheduler()
 load_dotenv()
 def create_app():
     app = Flask(__name__)

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SENTRY // VERSION VAULT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            background-color: #0a0f1a; /* Deep Arctic Navy */
+            color: #e2e8f0; 
+            font-family: 'Inter', sans-serif;
+        }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .sidebar { background-color: #070b14; border-right: 1px solid #1e293b; }
+        .card-glass { background: #0f172a; border: 1px solid #1e293b; transition: all 0.3s; }
+        .card-glass:hover { border-color: #06b6d4; }
+        .accent-text { color: #06b6d4; }
+        .accent-bg { background-color: #06b6d4; }
+        /* Custom scrollbar for cinematic feel */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #070b14; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
+    </style>
+</head>
+<body class="flex min-h-screen overflow-hidden">
+
+    <!-- SIDEBAR -->
+    <aside class="w-72 sidebar flex flex-col p-8 min-h-screen border-r border-slate-800/60 shadow-2xl">
+        
+        <!-- TOP SECTION: Logo & Navigation -->
+        <div class="flex-1">
+            <div class="mb-16">
+                <h1 class="text-2xl font-black tracking-tighter flex items-center gap-3 italic">
+                    <span class="w-8 h-8 accent-bg text-black flex items-center justify-center rounded-sm not-italic">S</span> 
+                    SENTRY.OS
+                </h1>
+                <p class="text-[9px] text-slate-500 mt-2 uppercase tracking-[0.3em] font-bold opacity-70 text-nowrap">V1.0 / CINEMATIC BUILD</p>
+            </div>
+            
+            {% if current_user.is_authenticated %}
+            <nav class="flex flex-col space-y-8">
+                <!-- Vault Link -->
+                <a href="{{ url_for('dashboard') }}" 
+                   class="group flex items-center gap-4 text-sm font-bold tracking-widest transition-all {% if request.path == '/dashboard' %}accent-text{% else %}text-slate-500 hover:text-white{% endif %}">
+                    <span class="w-5 h-5 border-2 {% if request.path == '/dashboard' %}border-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.4)]{% else %}border-slate-700 group-hover:border-slate-400{% endif %} transition-all"></span>
+                    VAULT
+                </a>
+                
+                <!-- Archive Link -->
+                <a href="{{ url_for('archive') }}" 
+                   class="group flex items-center gap-4 text-sm font-bold tracking-widest transition-all {% if request.path == '/archive' %}accent-text{% else %}text-slate-500 hover:text-white{% endif %}">
+                    <span class="w-5 h-5 border-2 {% if request.path == '/archive' %}border-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.4)]{% else %}border-slate-700 group-hover:border-slate-400{% endif %} transition-all"></span>
+                    ARCHIVE
+                </a>
+            </nav>
+            {% else %}
+            <div class="mt-20 border-l border-slate-800 pl-4">
+                <p class="text-[10px] mono text-slate-600 uppercase tracking-widest">System_Locked</p>
+                <p class="text-[9px] text-slate-700 mt-1 uppercase">Authentication Required to access nodes.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- BOTTOM SECTION: User Profile & Sign Out -->
+        <div class="pt-8 border-t border-slate-800/50">
+            {% if current_user.is_authenticated %}
+            <div class="flex items-center gap-4 mb-8">
+                <div class="w-12 h-12 rounded-full bg-slate-900 border-2 border-slate-800 flex items-center justify-center text-sm font-black text-cyan-400 shadow-inner uppercase">
+                    {{ current_user.username[:2] }}
+                </div>
+                <div class="flex flex-col">
+                    <p class="text-sm font-black tracking-tight text-white uppercase">{{ current_user.username }}</p>
+                    <p class="text-[9px] text-cyan-500/60 font-bold uppercase tracking-widest">System Operator</p>
+                </div>
+            </div>
+            
+            <a href="/logout" 
+               class="group flex items-center justify-between w-full p-4 border border-slate-800 text-[10px] font-black hover:bg-white hover:text-black transition-all uppercase tracking-[0.2em] relative overflow-hidden">
+                <span class="relative z-10">Sign Out</span>
+                <span class="relative z-10 transition-transform group-hover:translate-x-1">→</span>
+            </a>
+            {% else %}
+            <div class="p-4 border border-dashed border-slate-800 text-[9px] text-center text-slate-600 uppercase font-bold tracking-widest">
+                Awaiting Identity
+            </div>
+            {% endif %}
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 flex flex-col overflow-y-auto">
+        <!-- Top Status Ticker -->
+        <div class="h-10 border-b border-slate-800 flex items-center px-8 justify-between text-[10px] text-slate-500 mono uppercase tracking-widest bg-slate-950/20 backdrop-blur-md sticky top-0 z-50">
+            <div class="flex gap-4">
+                <span class="text-slate-600">ST_NODE: 01</span>
+                <span class="text-slate-700">|</span>
+                <span>2026-07-16 // SENTRY_SECURE_LINK</span>
+            </div>
+            <div class="flex gap-6 items-center">
+                <span class="flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse"></span> 
+                    SYSTEM_READY
+                </span>
+                <span class="opacity-40">ENC: AES_256</span>
+            </div>
+        </div>
+        
+        <!-- Page Content -->
+        <div class="p-12 max-w-6xl w-full mx-auto">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,71 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="max-w-md mx-auto mt-20 glass p-10 rounded-2xl border border-slate-800 relative overflow-hidden">
+    <!-- Decorative scanline effect -->
+    <div class="absolute top-0 left-0 w-full h-1 bg-cyan-500/20 shadow-[0_0_15px_#22d3ee] animate-pulse"></div>
+
+    <h2 id="form-title" class="text-3xl font-black text-center mb-8 tracking-tighter uppercase text-white">Access System</h2>
+    
+    <form id="auth-form" action="/login" method="post" class="space-y-6">
+        <div class="relative">
+            <input type="text" name="username" placeholder="OPERATOR_ID" required
+                class="w-full bg-slate-900/50 border border-slate-700 p-3 rounded focus:border-cyan-400 outline-none transition-all placeholder:text-slate-600">
+        </div>
+        
+        <div class="relative">
+            <input type="password" name="password" placeholder="PASSCODE" required
+                class="w-full bg-slate-900/50 border border-slate-700 p-3 rounded focus:border-cyan-400 outline-none transition-all placeholder:text-slate-600">
+        </div>
+
+        <button id="submit-btn" class="w-full bg-cyan-500 text-black py-3 font-bold uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_20px_rgba(34,211,238,0.2)]">
+            Authenticate
+        </button>
+    </form>
+
+    <!-- The Toggle Switch -->
+    <div class="mt-8 text-center">
+        <p id="toggle-text" class="text-xs text-slate-500 mb-2 uppercase tracking-tight">New Operator detected?</p>
+        <button onclick="toggleAuth()" id="toggle-btn" class="text-xs font-bold text-cyan-400 hover:text-white transition uppercase tracking-widest underline decoration-cyan-500/30 underline-offset-4">
+            Initialize Registration
+        </button>
+    </div>
+
+    <!-- Flash Messages (Errors) -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="mt-4 p-3 bg-red-500/10 border border-red-500/50 text-red-500 text-xs text-center rounded">
+          {% for message in messages %}{{ message }}{% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+</div>
+
+<script>
+    let isLogin = true;
+    const form = document.getElementById('auth-form');
+    const title = document.getElementById('form-title');
+    const submitBtn = document.getElementById('submit-btn');
+    const toggleBtn = document.getElementById('toggle-btn');
+    const toggleText = document.getElementById('toggle-text');
+
+    function toggleAuth() {
+        isLogin = !isLogin;
+        
+        if (isLogin) {
+            form.action = "/login";
+            title.innerText = "Access System";
+            submitBtn.innerText = "Authenticate";
+            toggleBtn.innerText = "Initialize Registration";
+            toggleText.innerText = "New Operator detected?";
+            submitBtn.classList.replace('bg-white', 'bg-cyan-500');
+        } else {
+            form.action = "/register";
+            title.innerText = "New Account";
+            submitBtn.innerText = "Create Identity";
+            toggleBtn.innerText = "Return to Login";
+            toggleText.innerText = "Already have an ID?";
+            submitBtn.classList.replace('bg-cyan-500', 'bg-white');
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends 'layout.html' %}
+{% block content %}
+<!-- TOP STATS BAR -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+    <div class="card-glass p-4 rounded-lg border border-slate-800">
+        <p class="text-[10px] text-slate-500 uppercase tracking-widest">Active Files</p>
+        <h3 class="text-2xl font-black text-cyan-500">{{ files|length }}</h3>
+    </div>
+    <div class="card-glass p-4 rounded-lg border border-slate-800">
+        <p class="text-[10px] text-slate-500 uppercase tracking-widest">Total Versions</p>
+        <h3 class="text-2xl font-black text-purple-500">{{ total_versions_count }}</h3>
+    </div>
+    <div class="card-glass p-4 rounded-lg border border-slate-800">
+        <p class="text-[10px] text-slate-500 uppercase tracking-widest">Optimization</p>
+        <h3 class="text-2xl font-black text-green-500">74.2% Saved</h3>
+    </div>
+    <div class="card-glass p-4 rounded-lg border border-slate-800 text-right">
+        <p class="text-[10px] text-slate-500 uppercase tracking-widest">System Status</p>
+        <p class="text-xs font-bold text-cyan-400">● SECURE & LIVE</p>
+    </div>
+</div>
+
+<h2 class="text-xs font-bold text-slate-500 mb-6 uppercase tracking-[0.3em]">—— Tracked Files & Version History</h2>
+
+<div class="space-y-6">
+    {% for file in files %}
+    <div class="card-glass rounded-xl border border-slate-800 overflow-hidden shadow-2xl">
+        <!-- File Header -->
+        <div class="bg-slate-900/50 p-4 border-b border-slate-800 flex justify-between items-center">
+            <div>
+                <h3 class="text-lg font-bold text-white mb-1">{{ file.filename }}</h3>
+                <p class="text-[10px] text-slate-500 font-mono">{{ file.path }}</p>
+            </div>
+            <span class="bg-cyan-500/10 text-cyan-400 text-[10px] px-3 py-1 rounded-full border border-cyan-500/20 uppercase font-bold">
+                {{ file.versions|length }} Versions
+            </span>
+        </div>
+
+        <!-- Version List -->
+        <div class="p-2 space-y-1">
+            {% for version in file.versions|sort(attribute='timestamp', reverse=True) %}
+            <div class="group flex items-center justify-between p-3 rounded-lg hover:bg-white/5 transition-all">
+                <div class="flex items-center gap-4">
+                    <span class="text-xs font-black text-slate-600 group-hover:text-cyan-500 transition">v{{ version.version_number }}</span>
+                    <div>
+                        <p class="text-xs text-slate-300">{{ version.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                        <p class="text-[10px] text-slate-500 italic">{{ version.change_summary or "Autonomous snapshot captured" }}</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-2 opacity-60 group-hover:opacity-100 transition">
+                    <!-- DIFF BUTTON: Only show if there is an older version to compare against -->
+                    {% if not loop.last %}
+                        {# Jinja doesn't support slicing/indexing the result of filters like this reliably #}
+                        {% set versions_sorted = file.versions|sort(attribute='timestamp', reverse=True) %}
+                        {% set prev_version = versions_sorted[loop.index] %}
+                        <a href="{{ url_for('view_diff', v1_id=prev_version.id, v2_id=version.id) }}" 
+                           class="text-[10px] font-bold border border-cyan-500/40 text-cyan-400 px-3 py-1.5 rounded hover:bg-cyan-500 hover:text-black transition">
+                            VIEW DELTA
+                        </a>
+                    {% endif %}
+                    
+                    <a href="{{ url_for('download_version', version_id=version.id) }}" 
+                       class="text-[10px] font-bold border border-slate-700 text-slate-400 px-3 py-1.5 rounded hover:bg-white hover:text-black transition">
+                        RESTORE
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

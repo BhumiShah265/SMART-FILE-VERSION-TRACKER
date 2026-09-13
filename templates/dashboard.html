@@ -8,7 +8,7 @@
     </div>
     <div class="card-glass p-4 rounded-lg border border-slate-800">
         <p class="text-[10px] text-slate-500 uppercase tracking-widest">Total Versions</p>
-        <h3 class="text-2xl font-black text-purple-500">{{ total_versions_count }}</h3>
+        <h3 class="text-2xl font-black text-purple-500">{{ total_v }}</h3>
     </div>
     <div class="card-glass p-4 rounded-lg border border-slate-800">
         <p class="text-[10px] text-slate-500 uppercase tracking-widest">Optimization</p>
@@ -20,7 +20,15 @@
     </div>
 </div>
 
-<h2 class="text-xs font-bold text-slate-500 mb-6 uppercase tracking-[0.3em]">—— Tracked Files & Version History</h2>
+<div class="flex items-center justify-between mb-6">
+    <h2 class="text-xs font-bold text-slate-500 uppercase tracking-[0.3em]">—— Tracked Files & Version History</h2>
+    <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" class="flex items-center gap-2">
+        <label for="file-upload" class="cursor-pointer text-[10px] font-bold border border-cyan-500/40 text-cyan-400 px-3 py-2 rounded hover:bg-cyan-500 hover:text-black transition uppercase tracking-widest">
+            Add File
+        </label>
+        <input id="file-upload" type="file" name="file" class="hidden" required onchange="this.form.submit()">
+    </form>
+</div>
 
 <div class="space-y-6">
     {% for file in files %}
@@ -29,7 +37,7 @@
         <div class="bg-slate-900/50 p-4 border-b border-slate-800 flex justify-between items-center">
             <div>
                 <h3 class="text-lg font-bold text-white mb-1">{{ file.filename }}</h3>
-                <p class="text-[10px] text-slate-500 font-mono">{{ file.path }}</p>
+                <p class="text-[10px] text-slate-500 font-mono">Tracked file</p>
             </div>
             <span class="bg-cyan-500/10 text-cyan-400 text-[10px] px-3 py-1 rounded-full border border-cyan-500/20 uppercase font-bold">
                 {{ file.versions|length }} Versions
@@ -44,7 +52,7 @@
                     <span class="text-xs font-black text-slate-600 group-hover:text-cyan-500 transition">v{{ version.version_number }}</span>
                     <div>
                         <p class="text-xs text-slate-300">{{ version.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
-                        <p class="text-[10px] text-slate-500 italic">{{ version.change_summary or "Autonomous snapshot captured" }}</p>
+                        <p class="text-[10px] text-slate-500 italic">Autonomous snapshot captured</p>
                     </div>
                 </div>
 
